@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <title>TODO App</title>
+    </head>
+    <script>
+    function deleteTodo(id){
+        fetch("http://localhost:3000/todos/"+id, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(() => {
+            console.log("Deleted");
+            var delTodo = document.getElementById(id);
+            var todosContainer = document.getElementById("todos-container");
+            todosContainer.removeChild(delTodo);
+        })
+    }
+
+    function getData(){
+        fetch("http://localhost:3000/todos", {
+            method: "GET"
+        }).then((res) => {
+            res.json().then((data) => {
+                var todosContainer = document.getElementById("todos-container");
+                for(var i=0; i<data.length; i++){
+                    var childElement = document.createElement("div");
+                    var grandChild1 = document.createElement("span");
+                    var grandChild2 = document.createElement("span");
+                    var grandChild3 = document.createElement("button");
+                    grandChild1.innerHTML = data[i].title + " - ";
+                    grandChild2.innerHTML = data[i].description + " ";
+                    grandChild3.innerHTML = "Delete";
+                    grandChild3.setAttribute("onclick", "deleteTodo(" + data[i].id +")");
+                    childElement.setAttribute("id", data[i].id);
+
+                    childElement.appendChild(grandChild1);
+                    childElement.appendChild(grandChild2);
+                    childElement.appendChild(grandChild3);
+
+                    todosContainer.appendChild(childElement);
+                }
+            })
+        })
+    }
+    getData();
+
+    function onPress(){
+        var todoTitle = document.getElementById("title");
+        var todoDescription = document.getElementById("description");
+            fetch("http://localhost:3000/todos", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: todoTitle.value,
+                    description: todoDescription.value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then((res) => {
+            res.json().then((data) => {
+                var todosContainer = document.getElementById("todos-container");
+                var childContainer = document.createElement("div");
+                var grandChild1 = document.createElement("span");
+                var grandChild2 = document.createElement("span");
+                var grandChild3 = document.createElement("button");
+
+                grandChild1.innerHTML = data.title + " - ";
+                grandChild2.innerHTML = data.description + " ";
+                grandChild3.innerHTML = "Delete";
+
+                childContainer.appendChild(grandChild1);
+                childContainer.appendChild(grandChild2);
+                childContainer.appendChild(grandChild3);
+                todosContainer.appendChild(childContainer);
+                console.log(data);
+        });
+        })
+        }
+    </script>
+    <body>
+        Todo title
+        <input type="text" id="title"></input><br><br>
+        Todo Description
+        <input type="text" id="description"></title><br><br>
+        <button onclick="onPress()">Send todo</button>
+        <br>
+        <h3>Todo List:</h3>
+        <div id="todos-container">
+            <!--Updated by backend data-->
+        </div>
+    </body>
+</html>
